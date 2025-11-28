@@ -51,3 +51,5 @@ Notes:
 ### Install via requirements.txt
 ```bash
 python -m pip install -r requirements.txt
+## Releases
+- v0.1 — Day 1–3 MVP (metrics + SQL parity + charts + memo)
