@@ -76,3 +76,5 @@ python -m pip install -r requirements.txt
   <img src="docs/charts/cohort_heatmap.png" alt="Cohort Retention" width="31%" />
   <img src="docs/charts/opac_trend.png" alt="OPAC Trend" width="31%" />
 </p>
+
+**Live site:** https://samuelvurity.github.io/beamcart-churn-metrics/
