@@ -16,8 +16,13 @@ week = week.sort_values("opac", ascending=False)
 top = week.iloc[0]
 
 print("=== OPAC by Channel — Latest Week ===")
-print(week[["week_start","acquisition_channel","wau","orders_net","opac"]]
-      .to_string(index=False, formatters={"opac":"{:.4f}".format}))
+print(
+    week[["week_start", "acquisition_channel", "wau", "orders_net", "opac"]].to_string(
+        index=False, formatters={"opac": "{:.4f}".format}
+    )
+)
 print("\n>>> Recommended initial lever (highest OPAC):")
-print(f"Week starting {latest.date()} — channel = {top['acquisition_channel']} "
-      f"(WAU={int(top['wau'])}, orders={int(top['orders_net'])}, OPAC={top['opac']:.4f})")
+print(
+    f"Week starting {latest.date()} — channel = {top['acquisition_channel']} "
+    f"(WAU={int(top['wau'])}, orders={int(top['orders_net'])}, OPAC={top['opac']:.4f})"
+)

@@ -1,0 +1,11 @@
+user_id,event_ts,event_type
+u1,2025-10-27 10:00:00,session_start
+u1,2025-11-03 09:00:00,session_start
+u1,2025-11-10 11:00:00,session_start
+u2,2025-10-31 12:00:00,session_start
+u2,2025-11-08 12:00:00,session_start
+u3,2025-11-03 08:00:00,session_start
+u3,2025-11-04 09:00:00,session_start
+u3,2025-11-10 09:00:00,session_start
+u4,2025-11-07 12:00:00,session_start
+u5,2025-11-11 10:00:00,session_start

@@ -14,7 +14,7 @@ df = pd.read_csv(interim / "opac_by_channel_week.csv", parse_dates=["week_start"
 latest = df["week_start"].max()
 week = df[df["week_start"] == latest].copy().sort_values("opac", ascending=False)
 
-plt.figure(figsize=(7,4))
+plt.figure(figsize=(7, 4))
 plt.bar(week["acquisition_channel"], week["opac"])
 for i, (ch, opac, wau) in enumerate(zip(week["acquisition_channel"], week["opac"], week["wau"])):
     plt.text(i, opac, f"{opac:.2f}\nWAU={int(wau)}", ha="center", va="bottom", fontsize=9)
@@ -27,5 +27,8 @@ plt.tight_layout()
 out = charts / "opac_by_channel_latest.png"
 plt.savefig(out, dpi=160)
 print(f"✅ saved chart: {out}")
-print(week[["week_start","acquisition_channel","wau","orders_net","opac"]]
-      .to_string(index=False, formatters={"opac":"{:.4f}".format}))
+print(
+    week[["week_start", "acquisition_channel", "wau", "orders_net", "opac"]].to_string(
+        index=False, formatters={"opac": "{:.4f}".format}
+    )
+)

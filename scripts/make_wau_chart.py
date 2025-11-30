@@ -13,7 +13,7 @@ charts.mkdir(parents=True, exist_ok=True)
 df = pd.read_csv(interim / "wau_by_week.csv", parse_dates=["week_start"])
 df = df.sort_values("week_start")
 
-plt.figure(figsize=(7,4))
+plt.figure(figsize=(7, 4))
 plt.plot(df["week_start"], df["wau"], marker="o")
 plt.title("Weekly Active Users (WAU)")
 plt.xlabel("ISO Week Start (UTC)")

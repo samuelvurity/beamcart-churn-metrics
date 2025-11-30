@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import duckdb, pandas as pd
+import duckdb
+import pandas as pd
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,14 +13,16 @@ INTERIM.mkdir(parents=True, exist_ok=True)
 csv_events = str(RAW / "events.csv").replace("'", "''")
 
 con = duckdb.connect()
-con.execute(f"""
+con.execute(
+    f"""
 CREATE OR REPLACE VIEW events AS
 SELECT
   user_id,
   CAST(event_ts AS TIMESTAMP) AS event_ts,
   event_type
 FROM read_csv_auto('{csv_events}', header=True);
-""")
+"""
+)
 
 sql = SQL_PATH.read_text()
 sql_wau = con.execute(sql).df()  # columns: week_start (TIMESTAMP), wau (INT)
@@ -32,8 +35,9 @@ sql_wau.to_csv(out_sql, index=False)
 py_wau = pd.read_csv(INTERIM / "wau_by_week.csv", parse_dates=["week_start"])
 sql_wau["week_start"] = pd.to_datetime(sql_wau["week_start"])
 
-merged = (py_wau.merge(sql_wau, on="week_start", how="outer", suffixes=("_py", "_sql"))
-                 .sort_values("week_start"))
+merged = py_wau.merge(sql_wau, on="week_start", how="outer", suffixes=("_py", "_sql")).sort_values(
+    "week_start"
+)
 merged["match"] = merged["wau_py"].fillna(-1).eq(merged["wau_sql"].fillna(-1))
 
 print("DuckDB WAU:")

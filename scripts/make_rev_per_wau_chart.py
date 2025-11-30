@@ -12,7 +12,7 @@ charts.mkdir(parents=True, exist_ok=True)
 
 df = pd.read_csv(interim / "rev_per_wau.csv", parse_dates=["week_start"]).sort_values("week_start")
 
-plt.figure(figsize=(7,4))
+plt.figure(figsize=(7, 4))
 plt.plot(df["week_start"], df["rev_per_wau"], marker="o")
 plt.title("Revenue per Weekly Active User (Rev/WAU)")
 plt.xlabel("ISO Week Start (UTC)")
@@ -23,4 +23,4 @@ plt.tight_layout()
 out = charts / "rev_per_wau_trend.png"
 plt.savefig(out, dpi=160)
 print(f"✅ saved chart: {out}")
-print(df.to_string(index=False, formatters={"rev_per_wau":"{:.2f}".format}))
+print(df.to_string(index=False, formatters={"rev_per_wau": "{:.2f}".format}))

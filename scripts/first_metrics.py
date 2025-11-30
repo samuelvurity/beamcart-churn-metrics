@@ -9,10 +9,12 @@ RAW = ROOT / "data" / "raw"
 INTERIM = ROOT / "data" / "interim"
 INTERIM.mkdir(parents=True, exist_ok=True)
 
+
 # --- Helpers ---
 def week_start_utc(ts_series: pd.Series) -> pd.Series:
     # Monday 00:00:00 as start of ISO week (UTC-naive timestamps)
     return (ts_series - pd.to_timedelta(ts_series.dt.weekday, unit="D")).dt.normalize()
+
 
 # --- Events → WAU ---
 events = pd.read_csv(RAW / "events.csv", parse_dates=["event_ts"])
@@ -52,4 +54,4 @@ print(f"  {aov_path}\n")
 print("WAU by week:")
 print(wau.to_string(index=False))
 print("\nAOV by week (net of refunds):")
-print(aov_by_week.to_string(index=False, formatters={'aov': '{:.2f}'.format}))
+print(aov_by_week.to_string(index=False, formatters={"aov": "{:.2f}".format}))

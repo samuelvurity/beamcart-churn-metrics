@@ -19,13 +19,24 @@ sess = events[events["event_type"] == "session_start"].copy()
 sess["event_day"] = sess["event_ts"].dt.normalize()
 
 # Cohort size per signup_date
-cohort = users.groupby("signup_date", as_index=False)["user_id"].nunique().rename(columns={"user_id":"cohort_size"})
+cohort = (
+    users.groupby("signup_date", as_index=False)["user_id"]
+    .nunique()
+    .rename(columns={"user_id": "cohort_size"})
+)
 
 # For each user, did they return on D+1 (exact calendar day)?
-ue = users[["user_id","signup_date"]].merge(sess[["user_id","event_day"]], on="user_id", how="left")
+ue = users[["user_id", "signup_date"]].merge(
+    sess[["user_id", "event_day"]], on="user_id", how="left"
+)
 ue["is_d1"] = ue["event_day"] == (ue["signup_date"] + pd.to_timedelta(1, "D"))
 
-d1 = ue.loc[ue["is_d1"]].groupby("signup_date", as_index=False)["user_id"].nunique().rename(columns={"user_id":"d1_users"})
+d1 = (
+    ue.loc[ue["is_d1"]]
+    .groupby("signup_date", as_index=False)["user_id"]
+    .nunique()
+    .rename(columns={"user_id": "d1_users"})
+)
 
 # Combine and compute rate
 out = cohort.merge(d1, on="signup_date", how="left").fillna({"d1_users": 0})

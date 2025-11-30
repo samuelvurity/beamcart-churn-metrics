@@ -1,0 +1,6 @@
+user_id,signup_ts,country,acquisition_channel
+u1,2025-10-27 09:00:00,US,paid
+u2,2025-10-30 11:00:00,US,organic
+u3,2025-11-03 08:00:00,IN,referral
+u4,2025-11-06 10:00:00,CA,paid
+u5,2025-11-10 09:00:00,US,email
