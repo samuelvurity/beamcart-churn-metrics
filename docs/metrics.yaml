@@ -1,0 +1,125 @@
+timezone: UTC
+iso_week_start: Monday
+notes: |
+  Revenue/AOV/OPAC are net of refunds. All cohort windows use calendar days in UTC.
+
+metrics:
+  - name: WAU
+    grain: week (ISO)
+    window: per ISO week
+    business_intent: Weekly reach of active customers
+    definition: Count distinct users with ≥1 session_start in the ISO week
+    inclusion_exclusion: Exclude bots if flagged; sessions only (not views)
+    formula: WAU = COUNT_DISTINCT(user_id WHERE session_start within week)
+    sql_file: sql/weekly_active.sql
+    segments: [acquisition_channel, country]
+    guardrails: []
+    edge_cases: Weeks with zero sessions (0 WAU)
+
+  - name: MAU
+    grain: month (calendar)
+    window: per calendar month
+    business_intent: Monthly reach of active customers
+    definition: Count distinct users with ≥1 session_start in the month
+    inclusion_exclusion: Exclude bots if flagged; sessions only
+    formula: MAU = COUNT_DISTINCT(user_id WHERE session_start within month)
+    sql_file: (computed in pandas)
+    segments: [acquisition_channel, country]
+    guardrails: []
+    edge_cases: Months truncated at dataset boundaries
+
+  - name: AOV
+    grain: week (ISO)
+    window: per ISO week
+    business_intent: Average order value, net of refunds
+    definition: Net revenue divided by net orders, excluding refunded orders
+    inclusion_exclusion: Exclude is_refund=1 from both revenue and order counts
+    formula: AOV = SUM(revenue WHERE not refunded) / COUNT(orders WHERE not refunded)
+    sql_file: sql/aov_by_week.sql
+    segments: []
+    guardrails: [refund_rate]
+    edge_cases: Weeks with only refunds → orders_net=0 → AOV = NaN
+
+  - name: OPAC
+    grain: week (ISO)
+    window: per ISO week
+    business_intent: Order frequency per active customer
+    definition: Net orders divided by WAU
+    inclusion_exclusion: Exclude refunded orders from numerator
+    formula: OPAC = orders_net / WAU
+    sql_file: sql/opac_by_week.sql
+    segments: [acquisition_channel, country]
+    guardrails: [refund_rate]
+    edge_cases: WAU=0 → OPAC undefined → treat as 0 in charts
+
+  - name: Rev/WAU
+    grain: week (ISO)
+    window: per ISO week
+    business_intent: Monetization per active customer
+    definition: Net revenue divided by WAU
+    inclusion_exclusion: Exclude refunded orders from revenue
+    formula: Rev/WAU = revenue_net / WAU
+    sql_file: sql/rev_per_wau.sql
+    segments: [acquisition_channel, country]
+    guardrails: [refund_rate]
+    edge_cases: WAU=0 → undefined → show 0 in charts
+
+  - name: Retention D1
+    grain: day (cohort)
+    window: calendar
+    business_intent: Next-day habit signal
+    definition: Percentage of signup-day users who return with a session_start on D+1 (UTC)
+    inclusion_exclusion: Session_start only; calendar-day compare
+    formula: d1 = users_with_session_on(signup_date+1) / cohort_size
+    sql_file: sql/cohort_retention.sql
+    segments: []
+    guardrails: []
+    edge_cases: Sparse cohorts → keep zeros
+
+  - name: Retention D7
+    grain: day (cohort)
+    window: calendar
+    business_intent: Week-later habit signal
+    definition: Percentage of signup-day users who return on D+7 (UTC)
+    inclusion_exclusion: Session_start only
+    formula: d7 = users_with_session_on(signup_date+7) / cohort_size
+    sql_file: sql/cohort_retention.sql
+    segments: []
+    guardrails: []
+    edge_cases: Include entire D+7 day (00:00–23:59 UTC)
+
+  - name: Retention D30
+    grain: day (cohort)
+    window: calendar
+    business_intent: 30-day habit signal
+    definition: Percentage of signup-day users who return on D+30 (UTC)
+    inclusion_exclusion: Session_start only
+    formula: d30 = users_with_session_on(signup_date+30) / cohort_size
+    sql_file: sql/cohort_retention.sql
+    segments: []
+    guardrails: []
+    edge_cases: Early cohorts only have measurable D30
+
+  - name: Churn (weekly)
+    grain: week (ISO)
+    window: rolling week to week
+    business_intent: Drop-off of actives
+    definition: Users active in week t-1 but not active in week t
+    inclusion_exclusion: Session_start-based activeness
+    formula: churn_rate_t = churned_users_t / active_t_minus_1
+    sql_file: sql/churn_rate.sql
+    segments: []
+    guardrails: []
+    edge_cases: Skip first observed week (no t-1)
+
+  - name: Refund rate
+    grain: week (ISO)
+    window: per ISO week
+    business_intent: Quality guardrail
+    definition: refund_orders / all_orders
+    inclusion_exclusion: Count all refunded vs total orders
+    formula: refund_rate = refund_orders / all_orders
+    sql_file: (pandas)
+    segments: []
+    guardrails: []
+    edge_cases: Weeks with zero orders → NaN
