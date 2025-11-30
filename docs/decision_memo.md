@@ -55,3 +55,7 @@ OPAC
 - For α=0.05, power=0.80, overdispersion φ≈1.2, estimated **N per arm** computed via scripts/exp_power.py.
 - With a **2-week readout**, required **WAU/arm ≈ N/2** (same users observed twice).
 - If using **CUPED** with pre-period OPAC and correlation ρ, effective N shrinks by ~**(1−ρ²)**.
+
+## Monitoring add-ons
+- WAU control chart: `docs/charts/wau_control_chart.png` (mean ± 3σ)
+- Refund rate trend: `docs/charts/refund_rate_trend.png` (guardrail 6%)
